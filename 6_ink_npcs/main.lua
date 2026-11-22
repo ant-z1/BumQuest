@@ -80,6 +80,15 @@ function love.load()
     battleNPC = nil
     playerDefending = false
     battleMessage = ""
+    pendingBattleNPC = nil
+
+    narrator.onDialogueComplete = function(npc)
+        if pendingBattleNPC == npc then
+            local battleTarget = pendingBattleNPC
+            pendingBattleNPC = nil
+            startBattle(battleTarget)
+        end
+    end
 
 end
 
@@ -375,7 +384,7 @@ function drawInteractPrompt(npc)
     love.graphics.setColor(1, 1, 1)
 
     love.graphics.print(
-        "Press E to fight",
+        "Press E to talk",
         npc.x - 40,
         npc.y - 60
     )
@@ -652,9 +661,21 @@ function love.keypressed(key)
     
     elseif gameState == "playing" then
 
-        if key == "e" and nearbyNPC then
+        if narrator:isOpen() then
 
-            startBattle(nearbyNPC)
+            if key == "return" or key == "space" then
+                narrator:onAction()
+            elseif key == "up" or key == "left" then
+                narrator:prevOption()
+            elseif key == "down" or key == "right" then
+                narrator:nextOption()
+            end
+
+        elseif key == "e" and nearbyNPC then
+
+            pendingBattleNPC = nearbyNPC
+            narrator:startScript(nearbyNPC)
+            nearbyNPC = nil
 
         end
 
