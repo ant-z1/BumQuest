@@ -393,7 +393,7 @@ function love.draw()
     if gameState == "mainMenu" then
 
         love.graphics.printf(
-            "MY GAME",
+            "BumQuest",
             0,
             150,
             love.graphics.getWidth(),
